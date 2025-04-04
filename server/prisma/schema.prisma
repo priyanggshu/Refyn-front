@@ -1,0 +1,13 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Migration {
+  id        String  @id @default(uuid())
+  userId    String
+  sourceDB  String
+  targetDB  String
+  status    String  @default("pending")
+  createdAt DateTime @default(now())
+}
