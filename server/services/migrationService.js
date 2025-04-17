@@ -1,23 +1,21 @@
 import axios from "axios";
 import { PrismaClient } from "@prisma/client";
+import supabase from "../utils/supabaseClient.js";
+import { fetchMongoSchema, fetchMySQLSchema, fetchPostgresSchema } from "./schemaFetchers.js";
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const SUPABASE_URL = process.env.SUPABASE_URL;
 
-export const migrateSchema = async (sourceDB, targetDB) => {
+const prisma = new PrismaClient();
+
+export const migrateSchema = async (userId, sourceDB, targetDB) => {
   try {
     // extract schema from source
     const schema = await extractSchemaFromDB(sourceDB);
-
-    // validate & fix Schema using AI
-    const { success, correctedSchema } = await validateSchema(schema, targetDB);
-    if (!success) return { success: false, error: "Schema vaidation failed" };
-
-    // apply Schema to Target DB
-    await applySchemaToDB(targetDB, correctedSchema);
-    return { success: true };
+    return schema;
   } catch (error) {
-    console.error("Error in migrateSchema:", error);
-    return { success: false, error: "Migration failed" };
+    console.error("Failed to extract schema:", error.message);
+    throw new Error("Schema extraction failed");
   }
 };
 
@@ -26,10 +24,17 @@ const extractSchemaFromDB = async (dbURL) => {
   return `CREATE TABLE example (id SERIAL PRIMARY KEY, name TEXT);`;
 };
 
-export const applySchemaToDB = async (dbURL, schema) => {
+export const applySchemaToDB = async (dbURL, migrationId) => {
+  const { data: file, error } = await supabase.storage
+    .from("schemas")
+    .download(`schemas/${migrationId}.sql`);
+
+  if (error) throw new Error("Failed to download schema from Supabase");
+  const finalSchema = await file.text();
+
   // Logic to apply schema to target DB
-  console.log(`Applying schema to ${dbURL}:`, schema);
-}
+  console.log(`Applying schema to ${dbURL}: ${finalSchema}`);
+};
 
 export const validateSchema = async (schema, targetDB) => {
   try {
@@ -71,4 +76,44 @@ export const validateSchema = async (schema, targetDB) => {
       error: "AI validation failed, using original schema.",
     };
   }
+};
+
+export const getCurrentSchema = async (dbURL) => {
+  try {
+    const dbType = dbURL.type;
+
+    if (dbType === "postgres") {
+      return await fetchPostgresSchema(dbURL.config);
+    } else if (dbType === "mysql") {
+      return await fetchMySQLSchema(dbURL.config);
+    } else if (dbType === "mongodb") {
+      return await fetchMongoSchema(dbURL.config);
+    } else {
+      throw new Error(`Unsupported DB type: ${dbType}`);
+    }
+  } catch (error) {
+    console.error("Error in getCurrentSchema:", error.message);
+    throw error;
+  }
+}
+
+
+
+
+const uploadSchemaToSupabase = async (schema, migrationId) => {
+  const buffer = Buffer.from(schema, "utf-8");
+
+  const { data, error } = await supabase.storage
+    .from("schemas")
+    .upload(`schemas/${migrationId}.sql`, buffer, {
+      contentType: "text/plain",
+      upsert: true,
+    });
+
+  if (error) {
+    console.error("Supabase Upload Error:", error.message);
+    throw new Error("Failed to upload schema to Supabase");
+  }
+
+  return `${SUPABASE_URL}/storage/v1/object/public/schemas/schemas/${migrationId}.sql`;
 };

@@ -1,7 +1,16 @@
 import { PrismaClient } from "@prisma/client";
-import { applySchemaToDB, migrateSchema, validateSchema } from "../services/migrationService.js";
+import {
+  applySchemaToDB,
+  getCurrentSchema,
+  migrateSchema,
+  validateSchema,
+} from "../services/migrationService.js";
 import redisClient from "../utils/redisClient.js";
 import { emitMigrationProgress } from "../services/websocketService.js";
+import { uploadSchemaFile } from "../services/supabaseService.js";
+import { migrationQueue } from "../queues/migrationQueue.js";
+import { chunkSchema } from "../utils/chunkSchema.js";
+import axios from "axios";
 
 const prisma = new PrismaClient();
 
@@ -30,7 +39,42 @@ export const migrateDatabase = async (req, res) => {
         status: "failed",
         message: "Schema vaidation failed.",
       });
-      return res.status(400).json({ error: "Schema validation failed", details: validation.error });
+      return res
+        .status(400)
+        .json({ error: "Schema validation failed", details: validation.error });
+    }
+
+    const rollbackSchema = await getCurrentSchema(targetDB);
+    const rollbackSchemaUrl = await uploadSchemaFile(
+      rollbackSchema,
+      userId,
+      migration.id,
+      "rollback"
+    );
+
+    await redisClient.set(`rollback:${migration.id}`, rollbackSchema);
+
+    // Save rollback URL in migration record (optional fallback)
+    await prisma.migration.update({
+      where: { id: migration.id },
+      data: { rollbackSchemaUrl },
+    });
+
+    const originalSchemaText = schema;
+    const correctedSchemaText = validation.correctedSchema || schema;
+
+    const schemaText = correctedSchemaText;
+    const schemaUrl = await uploadSchemaFile(schemaText, userId, migration.id);
+
+    if (schemaUrl) {
+      await prisma.migration.update({
+        where: { id: migration.id },
+        data: {
+          schemaUrl,
+          originalSchema: originalSchemaText,
+          correctedSchema: correctedSchemaText,
+        },
+      });
     }
 
     emitMigrationProgress(userId, {
@@ -38,14 +82,48 @@ export const migrateDatabase = async (req, res) => {
       message: "Schema validated successfully!",
     });
 
-    // Apply schema to target db
+    // Fetch latest migration (with approved version info)
+    const updatedMigration = await prisma.migration.findUnique({
+      where: { id: migration.id },
+    });
+
+    let finalSchema = updatedMigration.originalSchema;
+    if (updatedMigration.approvedSchemaVersion === "corrected") {
+      finalSchema = updatedMigration.correctedSchema;
+    }
+
+    emitMigrationProgress(userId, {
+      status: "chunking",
+      message: "Breaking schema into batches...",
+    });
+
+    const schemaBatches = chunkSchema(finalSchema, 10);
+
+    const batchStatus = {};
+    schemaBatches.forEach((batch) => {
+      batchStatus[batch.batchId] = "pending";
+    });
+
+    await redisClient.set(
+      `migration:${migration.id}:batches`,
+      JSON.stringify(batchStatus)
+    );
+
+    for (const batch of schemaBatches) {
+      await migrationQueue.add("apply-schema-batch", {
+        userId,
+        batch,
+        targetDB,
+        migrationId: migration.id,
+      });
+    }
     await new Promise((resolve) => setTimeout(resolve, 3000));
     emitMigrationProgress(userId, {
       status: "migrating",
       message: "Applying schema to target DB...",
     });
 
-    const migrationResult = await migrateSchema( targetDB, validation.correctedSchema );
+    const migrationResult = await applySchemaToDB(targetDB, finalSchema);
 
     // Mark as completed
     await new Promise((resolve) => setTimeout(resolve, 3000));
@@ -89,16 +167,35 @@ export const rollbackMigration = async (req, res) => {
   try {
     const migration = await prisma.migration.findUnique({ where: { id } });
     if (!migration) {
-        return res.status(404).json({ error: "Migration not found." });
+      return res.status(404).json({ error: "Migration not found." });
     }
 
-    const previousSchema = await redisClient.get(`rollback:${id}`);
-    if(!previousSchema) {
-      return res.status(400).json({ error: "No previous schema found for rollback." });
+    let rollbackSchema = await redisClient.get(`rollback:${id}`);
+
+    if (!rollbackSchema) {
+      // fallback to supabase
+      const migration = await prisma.migration.findUnique({
+        where: { id },
+        select: { rollbackSchemaUrl, targetDB },
+      });
+
+      if (!migration?.rollbackSchemaUrl) {
+        return res.status(400).json({ error: "No rollback schema found." });
+      }
+
+      const response = await axios.get(migration.rollbackSchemaUrl);
+      if (response.status !== 200) {
+        return res.status(500).json({ error: "Failed to fetch rollback schema from storage." });
+      }
+
+      rollbackSchema = response.data;
     }
 
-    await applySchemaToDB(migration.targetDB, previousSchema);
-    await redisClient.set( `migration:${id}`, JSON.stringify({ status: "rolled back" }) );
+    await applySchemaToDB(migration.targetDB, rollbackSchema);
+    await redisClient.set(
+      `migration:${id}`,
+      JSON.stringify({ status: "rolled back" })
+    );
 
     emitMigrationProgress(id, {
       status: "rolled back",
@@ -109,4 +206,39 @@ export const rollbackMigration = async (req, res) => {
     console.error("Error rolling back migration:", error);
     return res.status(500).json({ error: "internal server error" });
   }
+};
+
+export const getSchemasForMigration = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.user.id;
+
+  const migration = await prisma.migration.findUnique({
+    where: { id },
+    select: {
+      originalSchema: true,
+      correctedSchema: true,
+      schemaUrl: true,
+    },
+  });
+
+  if (!migration)
+    return res.status(404).json({ message: "Migration not found" });
+  res.json(migration);
+};
+
+export const approveSchemaFix = async (req, res) => {
+  const { id } = req.params;
+  const { version } = req.body;
+  const userId = req.user.id;
+
+  if (!["original", "corrected"].includes(version)) {
+    return res.status(400).json({ message: "Invalid schema version" });
+  }
+
+  const migration = await prisma.migration.update({
+    where: { id },
+    data: { approvedSchemaVersion: version },
+  });
+
+  res.json({ message: `Schema version '${version}' approved.`, migration });
 };

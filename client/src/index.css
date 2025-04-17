@@ -1,1 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Krona+One&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Outfit:wght@100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Quattrocento:wght@400;700&family=Roboto:ital,wght@0,100..900;1,100..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&family=Syne:wght@400..800&display=swap');
 @import "tailwindcss";
+
+.font-Krona {
+    font-family: Krona One;
+}
+
+.font-Syne {
+    font-family: Syne;
+}
+
+.font-Montserrat {
+    font-family: Montserrat;
+}
+
+.font-Outfit {
+    font-family: Outfit;
+}
+
+.font-Playfair {
+    font-family: Playfair Display;
+}
+
+.font-Quattrocento {
+    font-family: Quattrocento;
+}
+
+.font-Source {
+    font-family: Source Serif;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(2, 2, 3, 0.8);
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(75, 85, 99, 0.5);
+    border-radius: 20px;
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fadeIn {
+    animation: fadeIn 0.2s ease-out forwards;
+  }
+  @keyframes highlight {
+    0% {
+      background-color: rgba(16, 185, 129, 0.2);
+    }
+    50% {
+      background-color: rgba(16, 185, 129, 0.1);
+    }
+    100% {
+      background-color: transparent;
+    }
+  }
+  .animate-highlight {
+    animation: highlight 2s ease-out;
+  }

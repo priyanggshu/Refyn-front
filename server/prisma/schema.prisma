@@ -3,11 +3,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                    String          @id @default(uuid())
+  email                 String          @unique
+  name                  String? 
+  provider              String          // "google" or "github"
+  providerId            String          // ID from provider
+  createdAt             DateTime        @default(now())
+  migrations            Migration[]
+}
+
 model Migration {
-  id        String  @id @default(uuid())
-  userId    String
-  sourceDB  String
-  targetDB  String
-  status    String  @default("pending")
-  createdAt DateTime @default(now())
+  id                      String        @id @default(uuid())
+  userId                  String
+  user                    User          @relation(fields: [userId], references: [id])
+  sourceDB                String
+  targetDB                String
+  schemaUrl               String?       // Supabase Storage link to the schema file
+  approvedSchemaVersion   String?       // "original" | "corrected"
+  status                  String        @default("pending")
+  originalSchema          String?       @db.Text
+  correctedSchema         String?       @db.Text
+  createdAt               DateTime      @default(now())
 }
