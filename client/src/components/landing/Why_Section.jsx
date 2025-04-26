@@ -21,7 +21,7 @@ const WhySection = () => {
             Why <span className="text-[#9a90da]">Refyn?</span>
           </h2>
           <div className="w-20 h-1 bg-gradient-to-r from-[#9a90da] to-[#716aeb] mx-auto mt-4 rounded-full"></div>
-          <p className="text-[#a7a7a8] mt-6 max-w-2xl mx-auto text-lg font-Montserrat">
+          <p className="text-[#a7a7a8] mt-6 max-w-2xl mx-auto text-lg font-Outfit">
             Traditional database migrations are complex and error-prone. We've
             reimagined the process from the ground up.
           </p>
@@ -43,7 +43,7 @@ const WhySection = () => {
             <h3 className="text-2xl font-bold text-white mb-4 font-Syne">
               Fragile Migrations
             </h3>
-            <p className="text-[#96969a] mb-6 font-Montserrat">
+            <p className="text-[#96969a] mb-6 font-Outfit">
               Traditional database migrations are brittle, requiring manual
               intervention when anything changes unexpectedly.
             </p>
@@ -71,7 +71,7 @@ const WhySection = () => {
             <h3 className="text-xl font-bold text-white mb-4 font-Syne">
               Schema Mismatches
             </h3>
-            <p className="text-[#96969a] mb-6 font-Montserrat">
+            <p className="text-[#96969a] mb-6 font-Outfit">
               Schema differences between databases lead to migration failures,
               data loss, and extended downtime.
             </p>
@@ -99,7 +99,7 @@ const WhySection = () => {
             <h3 className="text-xl font-bold text-white mb-4 font-Syne">
               Painful Rollbacks
             </h3>
-            <p className="text-[#96969a] mb-6 font-Montserrat">
+            <p className="text-[#96969a] mb-6 font-Outfit">
               When migrations fail, rolling back to previous states is complex,
               time-consuming, and often incomplete.
             </p>
@@ -156,7 +156,7 @@ const WhySection = () => {
                 <h3 className="text-2xl md:text-3xl font-bold text-white mb-6 font-Playfair">
                   The <span className="text-[#9a90da]">Refyn</span> Solution
                 </h3>
-                <p className="text-[#d1d1d2]  mb-6 font-Montserrat">
+                <p className="text-[#d1d1d2] mb-8 font-Outfit">
                   Refyn solves these challenges with AI-powered suggestions,
                   live batch streaming, and one-click rollbacks.
                 </p>
@@ -165,7 +165,7 @@ const WhySection = () => {
                     <div className="p-1 bg-[#9a90da]/20 rounded-full mt-1">
                       <div className="h-2 w-2 bg-green-300 rounded-full"></div>
                     </div>
-                    <p className="text-[#a7a7a8] font-Montserrat">
+                    <p className="text-[#a7a7a8] font-Outfit">
                       AI-driven schema analysis and error correction
                     </p>
                   </li>
@@ -173,7 +173,7 @@ const WhySection = () => {
                     <div className="p-1 bg-[#9a90da]/20 rounded-full mt-1">
                       <div className="h-2 w-2 bg-green-500 rounded-full"></div>
                     </div>
-                    <p className="text-[#a7a7a8] font-Montserrat">
+                    <p className="text-[#a7a7a8] font-Outfit">
                       Real-time migration monitoring with live progress tracking
                     </p>
                   </li>
@@ -181,21 +181,11 @@ const WhySection = () => {
                     <div className="p-1 bg-[#9a90da]/20 rounded-full mt-1">
                       <div className="h-2 w-2 bg-green-700 rounded-full"></div>
                     </div>
-                    <p className="text-[#a7a7a8] font-Montserrat">
+                    <p className="text-[#a7a7a8] font-Outfit">
                       Automatic rollback snapshots for fail-safe migrations
                     </p>
                   </li>
                 </ul>
-              </div>
-              <div className="mt-8 md:mt-0">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="px-8 py-4 bg-gradient-to-r from-[#9a90da] to-[#716aeb] text-white font-medium rounded-full flex items-center gap-2 shadow-lg shadow-[#716aeb]/30 font-Syne"
-                >
-                  Learn More
-                  <ArrowRight size={16} />
-                </motion.button>
               </div>
             </div>
           </div>

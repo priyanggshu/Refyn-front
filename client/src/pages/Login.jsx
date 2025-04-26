@@ -3,16 +3,19 @@ import { motion } from "framer-motion";
 import { supabase } from "../lib/supabaseClient";
 
 import Navbar from "../components/landing/Navbar";
-import ScrollLink from "../components/Reusables";
+import {ScrollLink} from "../components/Reusables";
 import OverviewSection from "../components/landing/Overview_Section";
 import WhySection from "../components/landing/Why_Section";
 import WorkflowSection from "../components/landing/Workflow_Section";
 import FeaturesSection from "../components/landing/Features_Section";
+import GetStartedModal from "../components/landing/GetStarted_Modal";
+import Footer from "../components/landing/Footer";
 
 function Login() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const login = async (provider) => {
     console.log("Login hit");
@@ -40,12 +43,21 @@ function Login() {
     return () => subscription.unsubscribe();
   }, []);
 
+  const openModal = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
   return (
     <div className="scroll-smooth min-h-screen bg-[url('./assets/mesh-1.png')] bg-cover bg-fixed overflow-x-hidden">
       {/* Navigation */}
       <Navbar
         mobileMenuOpen={mobileMenuOpen}
         setMobileMenuOpen={setMobileMenuOpen}
+        login={login}
       />
 
       {/* Mobile menu */}
@@ -80,7 +92,9 @@ function Login() {
             setMobileMenuOpen={setMobileMenuOpen}
           />
 
-          <button className="text-white text-sm font-medium mt-4 px-6 py-3 rounded-full bg-gradient-to-r from-[#9a90da] to-[#716aeb] shadow-lg shadow-[#9a90da]/20">
+          <button
+          onClick={openModal}
+          className="text-white text-sm font-medium mt-4 px-6 py-3 rounded-full bg-gradient-to-r from-[#9a90da] to-[#716aeb] shadow-lg shadow-[#9a90da]/20">
             Get Started
           </button>
         </div>
@@ -106,6 +120,17 @@ function Login() {
       <section id="features">
         <FeaturesSection />
       </section>
+
+      <GetStartedModal
+        isOpen={modalOpen}
+        onClose={closeModal}
+        isLoading={isLoading}
+        authError={authError}
+        login={login}
+      />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

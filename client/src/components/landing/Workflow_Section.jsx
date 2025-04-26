@@ -101,7 +101,7 @@ const WorkflowSection = () => {
             </span>{" "}
             Workflow
           </h2>
-          <p className="text-[#D1D1D2] text-lg max-w-2xl mx-auto font-Montserrat">
+          <p className="text-[#D1D1D2] text-lg max-w-2xl mx-auto font-Outfit">
             Our streamlined process makes database migration simple, fast, and reliable
           </p>
         </motion.div>
@@ -188,7 +188,7 @@ const WorkflowSection = () => {
                 </div>
                 <div>
                   <p className="text-white text-sm font-medium font-Outfit">GitHub</p>
-                  <p className="text-[#D1D1D2]/60 text-xs font-Montserrat">Connect with GitHub</p>
+                  <p className="text-[#D1D1D2]/60 text-xs font-Montserrat">Connect using GitHub</p>
                 </div>
               </motion.div>
               
@@ -206,7 +206,7 @@ const WorkflowSection = () => {
                 </div>
                 <div>
                   <p className="text-white text-sm font-medium font-Outfit">Google</p>
-                  <p className="text-[#D1D1D2]/60 text-xs font-Montserrat">Connect with Google</p>
+                  <p className="text-[#D1D1D2]/60 text-xs font-Montserrat">Connect using Google</p>
                 </div>
               </motion.div>
             </div>
@@ -220,7 +220,7 @@ const WorkflowSection = () => {
 const WorkflowStep = ({ step, icon, title, description, delay, isFirst }) => {
   // Create wave effect for positioning
   const getPositionStyle = (index) => {
-    // Only apply wave positioning on medium screens and above
+    // wave positioning on medium screens and above
     const baseStyle = {};
     
     if (typeof window !== 'undefined' && window.innerWidth >= 768) {

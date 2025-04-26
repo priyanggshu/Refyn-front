@@ -4,10 +4,10 @@ import { FcGoogle } from "react-icons/fc";
 
 import { OAuthButton } from "../Reusables";
 
-const OverviewSection = ({ id, isLoading, authError, login }) => {
+const OverviewSection = ({ isLoading, authError, login }) => {
   return (
     <section className="max-w-7xl mx-auto px-6 md:px-8 pt-12 lg:pt-20 pb-16 flex flex-col lg:flex-row items-center justify-between">
-      {/* Left content area */}
+      {/* Left area */}
       <div className="w-full lg:w-1/2 space-y-8 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -115,14 +115,14 @@ const OverviewSection = ({ id, isLoading, authError, login }) => {
         </motion.div>
       </div>
 
-      {/* Right animation */}
+      {/* Right area */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.8, delay: 0.5 }}
         className="w-full lg:w-1/2 mt-16 lg:mt-0 relative"
       >
-        {/* Glowing background effect */}
+        {/* Glowing effect */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#544f75]/20 to-[#716aeb]/20 rounded-full filter blur-3xl opacity-30 animate-pulse"></div>
 
         <div className="relative h-80 sm:h-80 md:h-96 mx-auto">

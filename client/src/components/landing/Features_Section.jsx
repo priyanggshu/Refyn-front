@@ -111,7 +111,7 @@ const FeaturesSection = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           viewport={{ once: true }}
-          className="text-[#D1D1D2] max-w-2xl mx-auto text-lg font-Montserrat"
+          className="text-[#D1D1D2] max-w-2xl mx-auto text-lg font-Outfit"
         >
           Everything you need for flawless database migrations, wrapped in a sleek, intuitive interface.
         </motion.p>
@@ -178,23 +178,10 @@ const FeaturesSection = () => {
               </h3>
               
               {/* Feature description */}
-              <p className="text-[#D1D1D2] font-Montserrat mb-4">
+              <p className="text-[#D1D1D2] font-Outfit mb-4">
                 {feature.description}
               </p>
               
-              {/* Learn more button */}
-              <div className="mt-auto pt-2">
-                <motion.button
-                  whileHover={{ x: 5 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                  className={`flex items-center text-sm font-Outfit ${
-                    hoveredCard === index ? 'text-[#9a90da]' : 'text-[#D1D1D2]/70'
-                  } transition-colors duration-300`}
-                >
-                  Learn more 
-                  <ArrowRight size={14} className="ml-1" />
-                </motion.button>
-              </div>
               
               {/* Card decorative elements */}
               <div className="absolute bottom-0 right-0 w-24 h-24 opacity-5">
@@ -252,25 +239,7 @@ const FeaturesSection = () => {
         />
       ))}
       
-      {/* Bottom CTA */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.6 }}
-        viewport={{ once: true }}
-        className="mt-16 text-center"
-      >
-        <motion.div 
-          whileHover={{ y: -3 }}
-          transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          className="inline-block"
-        >
-          <a href="#" className="inline-flex items-center px-6 py-3 rounded-full text-white bg-gradient-to-r from-[#9a90da]/80 to-[#716aeb]/80 hover:from-[#9a90da] hover:to-[#716aeb] transition-all duration-300 shadow-lg shadow-[#9a90da]/20 font-Outfit">
-            Explore all features
-            <ArrowRight size={16} className="ml-2" />
-          </a>
-        </motion.div>
-      </motion.div>
+      
     </section>
   );
 }
