@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 
   const login = async (provider) => {
+      
     console.log("Login hit")    
     setIsLoading(true);
     setAuthError(null);
@@ -14,17 +15,18 @@ import { motion } from "framer-motion";
     }
   };
 
-export const Motion_Span = ({ label, delay}) => (
+  export const Motion_Span = ({ label, delay, onClick }) => (
     <motion.span
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay }}
-        className="hover:text-white py-3 cursor-grab relative group"
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay }}
+      onClick={onClick}
+      className="hover:text-white py-3 cursor-pointer relative group"
     >
-        {label}
-        <span className="absolute left-0 bottom-2 w-0 h-0.5 bg-[#9a90da] transition-all duration-300 group-hover:w-full"></span>
+      {label}
+      <span className="absolute left-0 bottom-2 w-0 h-0.5 bg-[#9a90da] transition-all duration-300 group-hover:w-full"></span>
     </motion.span>
-)
+  );
 
 export const OAuthButton = ({ provider, label, icon: Icon, delay = 0.6, login }) => (
   <motion.button
@@ -40,3 +42,30 @@ export const OAuthButton = ({ provider, label, icon: Icon, delay = 0.6, login })
 );
 
 
+// components/ScrollLink.jsx
+
+const ScrollLink = ({ targetId, label, setMobileMenuOpen }) => {
+  const handleClick = () => {
+    setMobileMenuOpen(false);
+
+    setTimeout(() => {
+      const section = document.getElementById(targetId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        console.error(`Section ${targetId} not found`);
+      }
+    }, 150);
+  };
+
+  return (
+    <span
+      onClick={handleClick}
+      className="text-[#D1D1D2] py-3 hover:text-white hover:translate-x-2 transition-all duration-300 cursor-pointer"
+    >
+      {label}
+    </span>
+  );
+};
+
+export default ScrollLink;
