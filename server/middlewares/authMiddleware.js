@@ -1,14 +1,31 @@
 import jwt from "jsonwebtoken";
+import { PrismaClient } from "@prisma/client";
 
-export const authenticateUser = (req, res, next) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "Unauthorized" });
+const prisma = new PrismaClient();
 
+export const authenticateToken = async (req, res, next) => {
   try {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId }
+    });
+
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
+    }
+
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(403).json({ error: "Invalid token" });
+    console.error('Auth middleware error:', error);
+    res.status(401).json({ error: 'Invalid token' });
   }
 };

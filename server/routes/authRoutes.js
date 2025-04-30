@@ -1,28 +1,34 @@
 import express from "express";
 import passport from "passport";
+import { handleAuthCallback, getCurrentUser, logoutUser } from "../controllers/authController.js";
+import { authenticateToken } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-
-router.get("/google/callback", 
-    passport.authenticate("google", { session: false}),
-    (req, res) => {
-        res.json({ user: req.user.user, token: req.user.token });
-    }
+// Google OAuth routes
+router.get('/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
-router.get("/github", passport.authenticate("github", { scope: ["user:email"] }));
-
-router.get("/github/callback",
-    passport.authenticate("github", { session: false }),
-    (req, res) => {
-        res.json({ user: req.user.user, token: req.user.token });
-    }
+router.get('/google/callback',
+  passport.authenticate('google', { failureRedirect: `${process.env.FRONTEND_URL}/` }),
+  handleAuthCallback
 );
 
-router.post("/logout", (req, res) => {
-    res.json({ message: "Logged out" });
-});
+// GitHub OAuth routes
+router.get('/github',
+  passport.authenticate('github', { scope: ['user:email'] })
+);
+
+router.get('/github/callback',
+  passport.authenticate('github', { failureRedirect: `${process.env.FRONTEND_URL}/` }),
+  handleAuthCallback
+);
+
+// Get current user
+router.get('/me', authenticateToken, getCurrentUser);
+
+// Logout
+router.post('/logout', authenticateToken, logoutUser);
 
 export default router;

@@ -11,8 +11,8 @@ model User {
   id                    String          @id @default(uuid())
   email                 String          @unique
   name                  String? 
-  provider              String          // "google" or "github"
-  providerId            String          // ID from provider
+  provider              String          
+  providerId            String          
   createdAt             DateTime        @default(now())
   migrations            Migration[]
 }
@@ -23,8 +23,8 @@ model Migration {
   user                    User          @relation(fields: [userId], references: [id])
   sourceDB                String
   targetDB                String
-  schemaUrl               String?       // Supabase Storage link to the schema file
-  approvedSchemaVersion   String?       // "original" | "corrected"
+  schemaUrl               String?       
+  approvedSchemaVersion   String?       
   status                  String        @default("pending")
   originalSchema          String?       @db.Text
   correctedSchema         String?       @db.Text
