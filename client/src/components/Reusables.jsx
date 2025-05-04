@@ -44,7 +44,7 @@ export const OAuthButton = ({ provider, label, icon: Icon, delay = 0.6, login })
 
 // components/ScrollLink.jsx
 
-const ScrollLink = ({ targetId, label, setMobileMenuOpen }) => {
+export const ScrollLink = ({ targetId, label, setMobileMenuOpen }) => {
   const handleClick = () => {
     setMobileMenuOpen(false);
 
@@ -67,5 +67,3 @@ const ScrollLink = ({ targetId, label, setMobileMenuOpen }) => {
     </span>
   );
 };
-
-export default ScrollLink;

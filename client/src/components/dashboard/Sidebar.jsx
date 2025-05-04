@@ -11,13 +11,16 @@ import {
   X,
   ChevronRight
 } from "lucide-react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Sidebar() {
   const [searchActive, setSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hoverIndex, setHoverIndex] = useState(null);
   const location = useLocation();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
   
   const navItems = [
     { id: 'dashboard', to: '/dash/', icon: <Command className="w-5 h-5" />, label: 'Dashboard' },
@@ -42,6 +45,10 @@ export default function Sidebar() {
     }, 5000);
     return () => clearInterval(interval);
   }, [location.pathname]);
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <div className="relative w-20 lg:w-64 h-screen border-r border-gray-800/40 bg-gradient-to-b from-gray-900 via-black to-gray-900 backdrop-blur-lg transition-all duration-300 overflow-hidden">
@@ -144,39 +151,46 @@ export default function Sidebar() {
       <div className="absolute bottom-8 left-0 right-0 flex justify-center opacity-60">
         <div className="relative flex items-center justify-center">
           <div className="w-8 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent"></div>
-          <span className="mx-2 text-xs text-gray-500 font-Krona tracking-widest">進化</span>
+          <button 
+            onClick={handleLogout}
+            className="mx-2 text-xs text-gray-500 hover:text-gray-300 font-Krona tracking-widest transition-colors duration-200"
+          >
+            Logout
+          </button>
           <div className="w-8 h-px bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent"></div>
         </div>
       </div>
       
       {/* Add global CSS for animations */}
-      <style jsx global>{`
-        @keyframes pulse {
-          0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.2); }
-          70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
-        }
-        
-        .pulse {
-          animation: pulse 1.5s ease-out;
-        }
-        
-        .nav-item-active::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          border-radius: 0.75rem;
-          padding: 1px;
-          background: linear-gradient(90deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3));
-          -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          -webkit-mask-composite: xor;
-          mask-composite: exclude;
-          pointer-events: none;
-        }
-      `}</style>
+      <style>
+        {`
+          @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.2); }
+            70% { box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+          }
+          
+          .pulse {
+            animation: pulse 1.5s ease-out;
+          }
+          
+          .nav-item-active::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 0.75rem;
+            padding: 1px;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+          }
+        `}
+      </style>
     </div>
   );
 }

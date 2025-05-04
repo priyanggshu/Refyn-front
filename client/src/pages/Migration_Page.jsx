@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import MigrationOverview from "../components/migrations/MigrationOverview";
 import NewMigrationModal from "../components/migrations/NewMigrationModal";
 import MigrationTable from "../components/migrations/MigrationTable";

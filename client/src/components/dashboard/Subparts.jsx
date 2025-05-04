@@ -1,11 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import {
-  Terminal,
+  Database,
   CheckCircle,
   AlertTriangle,
   XCircle,
   Clock,
   RefreshCw,
+  MoreVertical,
+  FileCode,
+  Code2,
+  Copy,
+  Check,
+  Table,
 } from "lucide-react";
 
 export const LiveMigrationLogs = () => {
@@ -66,14 +72,19 @@ export const LiveMigrationLogs = () => {
   const [isLive, setIsLive] = useState(true);
   const logsContainerRef = useRef(null);
   const [newLogIndicator, setNewLogIndicator] = useState(false);
+  const [filterType, setFilterType] = useState("all");
 
   // Auto-scroll to bottom effect
   useEffect(() => {
     if (logsContainerRef.current && isLive) {
-      logsContainerRef.current.scrollTop =
-        logsContainerRef.current.scrollHeight;
+      logsContainerRef.current.scrollTop = logsContainerRef.current.scrollHeight;
     }
   }, [activeLogs, isLive]);
+
+  // Filter logs based on selected type
+  const filteredLogs = filterType === "all" 
+    ? activeLogs 
+    : activeLogs.filter(log => log.type === filterType);
 
   // Simulate new logs appearing
   useEffect(() => {
@@ -146,11 +157,11 @@ export const LiveMigrationLogs = () => {
   const getIconForLogType = (type) => {
     switch (type) {
       case "success":
-        return <CheckCircle className="h-4 w-4 text-emerald-500" />;
+        return <CheckCircle className="h-4 w-4 text-emerald-400" />;
       case "warning":
-        return <AlertTriangle className="h-4 w-4 text-amber-500" />;
+        return <AlertTriangle className="h-4 w-4 text-amber-400" />;
       case "error":
-        return <XCircle className="h-4 w-4 text-rose-500" />;
+        return <XCircle className="h-4 w-4 text-rose-400" />;
       default:
         return <Clock className="h-4 w-4 text-blue-400" />;
     }
@@ -159,13 +170,13 @@ export const LiveMigrationLogs = () => {
   const getLogTypeClass = (type) => {
     switch (type) {
       case "success":
-        return "border-l-emerald-500 hover:bg-emerald-900 hover:bg-opacity-20";
+        return "border-l-emerald-400 hover:bg-emerald-950 hover:bg-opacity-40";
       case "warning":
-        return "border-l-amber-500 hover:bg-amber-900 hover:bg-opacity-20";
+        return "border-l-amber-400 hover:bg-amber-950 hover:bg-opacity-40";
       case "error":
-        return "border-l-rose-500 hover:bg-rose-900 hover:bg-opacity-20";
+        return "border-l-rose-400 hover:bg-rose-950 hover:bg-opacity-40";
       default:
-        return "border-l-blue-400 hover:bg-blue-900 hover:bg-opacity-20";
+        return "border-l-blue-400 hover:bg-blue-950 hover:bg-opacity-40";
     }
   };
 
@@ -182,56 +193,106 @@ export const LiveMigrationLogs = () => {
     }
   };
 
-  return (
-    <section className="bg-gray-900 rounded-xl shadow-lg p-5 transition-all hover:shadow-xl border border-gray-800 overflow-hidden">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-Montserrat font-semibold text-gray-300 flex items-center">
-          <Terminal className="mr-3 h-6 w-6 text-green-400" />
-          Live Migration Logs
-        </h2>
+  const getFilterButtonClass = (type) => {
+    return filterType === type 
+      ? "bg-gray-800 text-white"
+      : "text-gray-400 hover:text-white hover:bg-gray-800 hover:bg-opacity-50";
+  };
 
-        <div className="flex items-center">
-          <div
-            className={`h-2 w-2 rounded-full mr-2 ${
-              isLive ? "bg-green-500 animate-pulse" : "bg-gray-500"
-            }`}
-          ></div>
+  return (
+    <section className="bg-black rounded-xl shadow-lg overflow-hidden border border-gray-800 transition-all duration-300 hover:shadow-xl hover:border-gray-700">
+      <div className="flex justify-between items-center p-5 border-b border-gray-800">
+        <div className="flex items-center space-x-3">
+          <div className="bg-indigo-900 bg-opacity-30 p-2 rounded-lg">
+            <Database className="h-5 w-5 text-indigo-400" />
+          </div>
+          <div>
+            <h2 className="text-sm font-Krona text-white">Live Migration Logs</h2>
+            <div className="flex items-center mt-1">
+              <div className={`h-2 w-2 rounded-full mr-2 ${isLive ? "bg-green-400 animate-pulse" : "bg-gray-500"}`}></div>
+              <span className="text-xs text-gray-400">PostgreSQL → AWS Aurora Cluster</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-4">
           <button
             onClick={() => setIsLive(!isLive)}
-            className="flex items-center text-sm font-Outfit font-medium text-gray-300 hover:text-white transition-all"
+            className={`flex items-center px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+              isLive 
+                ? "border-green-500 text-green-400 bg-green-900 bg-opacity-20" 
+                : "border-gray-700 text-gray-400 hover:border-gray-600"
+            }`}
           >
-            <RefreshCw
-              className={`mr-1.5 h-3 w-3 ${
-                isLive ? "animate-spin text-green-400" : "text-gray-400"
-              }`}
-            />
-            {isLive ? "Live" : "Paused"}
+            <RefreshCw className={`mr-1.5 h-3 w-3 ${isLive ? "animate-spin" : ""}`} />
+            {isLive ? "LIVE" : "PAUSED"}
           </button>
+          
+          <div className="relative group">
+            <button className="text-gray-400 hover:text-white">
+              <MoreVertical className="h-5 w-5" />
+            </button>
+          </div>
         </div>
+      </div>
+
+      <div className="flex border-b border-gray-800">
+        <button 
+          onClick={() => setFilterType("all")}
+          className={`px-4 py-2 text-xs font-medium ${getFilterButtonClass("all")}`}
+        >
+          All Logs
+        </button>
+        <button 
+          onClick={() => setFilterType("success")}
+          className={`px-4 py-2 text-xs font-medium flex items-center ${getFilterButtonClass("success")}`}
+        >
+          <div className="h-2 w-2 rounded-full bg-emerald-400 mr-1.5"></div>
+          Success
+        </button>
+        <button 
+          onClick={() => setFilterType("warning")}
+          className={`px-4 py-2 text-xs font-medium flex items-center ${getFilterButtonClass("warning")}`}
+        >
+          <div className="h-2 w-2 rounded-full bg-amber-400 mr-1.5"></div>
+          Warning
+        </button>
+        <button 
+          onClick={() => setFilterType("error")}
+          className={`px-4 py-2 text-xs font-medium flex items-center ${getFilterButtonClass("error")}`}
+        >
+          <div className="h-2 w-2 rounded-full bg-rose-400 mr-1.5"></div>
+          Error
+        </button>
+        <button 
+          onClick={() => setFilterType("info")}
+          className={`px-4 py-2 text-xs font-medium flex items-center ${getFilterButtonClass("info")}`}
+        >
+          <div className="h-2 w-2 rounded-full bg-blue-400 mr-1.5"></div>
+          Info
+        </button>
       </div>
 
       <div
         ref={logsContainerRef}
-        className="bg-gray-950 rounded-lg border border-gray-800 h-80 overflow-y-auto custom-scrollbar"
+        className="h-80 overflow-y-auto custom-scrollbar"
       >
         <div className="leading-relaxed">
-          {activeLogs.map((log, index) => (
+          {filteredLogs.map((log, index) => (
             <div
               key={log.id}
-              className={`border-l-2 pl-2 py-2.5 border-opacity-70 transition-all cursor-pointer ${getLogTypeClass(
+              className={`border-l-2 pl-2 py-3 border-opacity-70 transition-all cursor-pointer ${getLogTypeClass(
                 log.type
-              )} ${expandedLog === log.id ? "bg-gray-800 bg-opacity-30" : ""} ${
+              )} ${expandedLog === log.id ? "bg-gray-900 bg-opacity-70" : ""} ${
                 index === 0 && newLogIndicator ? "animate-highlight" : ""
               }`}
-              onClick={() =>
-                setExpandedLog(expandedLog === log.id ? null : log.id)
-              }
+              onClick={() => setExpandedLog(expandedLog === log.id ? null : log.id)}
             >
-              <div className="flex items-start px-3">
+              <div className="flex items-start px-4">
                 <div className="flex-shrink-0 mt-0.5">
                   {getIconForLogType(log.type)}
                 </div>
-                <div className="ml-2.5 flex-1">
+                <div className="ml-3 flex-1">
                   <div className="flex items-center">
                     <span className="font-mono text-xs text-gray-500 font-medium tracking-tight">
                       {log.timestamp}
@@ -248,8 +309,8 @@ export const LiveMigrationLogs = () => {
                   </div>
 
                   {expandedLog === log.id && (
-                    <div className="mt-2 pl-2 border-l border-gray-700 animate-fadeIn">
-                      <pre className="font-mono text-xs text-gray-400 bg-gray-900 rounded p-2 overflow-x-auto whitespace-pre-wrap">
+                    <div className="mt-2 ml-2 border-l border-gray-700 pl-3 animate-fadeIn">
+                      <pre className="font-mono text-xs text-gray-400 bg-gray-900 bg-opacity-50 rounded-md p-3 overflow-x-auto whitespace-pre-wrap">
                         {log.details}
                       </pre>
                     </div>
@@ -261,81 +322,62 @@ export const LiveMigrationLogs = () => {
         </div>
       </div>
 
-      <div className="mt-4 flex justify-between items-center">
-        <span className="text-xs font-Montserrat text-gray-500">
-          Showing {activeLogs.length} log entries
+      <div className="p-4 border-t border-gray-800 flex justify-between items-center">
+        <span className="text-xs text-gray-500">
+          {filteredLogs.length} {filterType !== "all" ? filterType : ""} log entries
         </span>
-        <div className="flex space-x-4">
-          <span className="flex items-center font-Montserrat text-xs text-gray-400">
-            <div className="h-2 w-2 rounded-full bg-emerald-500 mr-1.5"></div>
-            Success
-          </span>
-          <span className="flex items-center font-Montserrat text-xs text-gray-400">
-            <div className="h-2 w-2 rounded-full bg-amber-500 mr-1.5"></div>
-            Warning
-          </span>
-          <span className="flex items-center font-Montserrat text-xs text-gray-400">
-            <div className="h-2 w-2 rounded-full bg-rose-500 mr-1.5"></div>
-            Error
-          </span>
-          <span className="flex items-center font-Montserrat text-xs text-gray-400">
-            <div className="h-2 w-2 rounded-full bg-blue-400 mr-1.5"></div>
-            Info
-          </span>
+        <div className="flex items-center space-x-2">
+          <span className="text-xs text-gray-500">Updated: April 22, 2025</span>
+          <span className="text-gray-600">|</span>
+          <span className="text-xs text-gray-500">By: sfuzus</span>
         </div>
       </div>
 
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(17, 24, 39, 0.8);
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: rgba(75, 85, 99, 0.5);
-          border-radius: 20px;
-        }
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(-5px);
+      <style>
+        {`
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.8);
           }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out forwards;
-        }
-        @keyframes highlight {
-          0% {
-            background-color: rgba(16, 185, 129, 0.2);
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(75, 85, 99, 0.5);
+            border-radius: 20px;
           }
-          50% {
-            background-color: rgba(16, 185, 129, 0.1);
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+              transform: translateY(-5px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
           }
-          100% {
-            background-color: transparent;
+          .animate-fadeIn {
+            animation: fadeIn 0.2s ease-out forwards;
           }
-        }
-        .animate-highlight {
-          animation: highlight 2s ease-out;
-        }
-      `}</style>
+          @keyframes highlight {
+            0% {
+              background-color: rgba(16, 185, 129, 0.2);
+            }
+            50% {
+              background-color: rgba(16, 185, 129, 0.1);
+            }
+            100% {
+              background-color: transparent;
+            }
+          }
+          .animate-highlight {
+            animation: highlight 2s ease-out;
+          }
+        `}
+      </style>
     </section>
   );
 };
 
-// import { useState, useEffect } from "react";
-import {
-  FileCode,
-  Code2,
-  Copy,
-  Check,
-  ChevronsLeftRightEllipsis,
-} from "lucide-react";
 
 export const SchemaViewer = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -404,7 +446,7 @@ CREATE TABLE orders (
     }, [isLoading]);
 
     return (
-      <div className="font-mono text-base text-emerald-100 space-y-0.5">
+      <div className="font-mono text-sm text-purple-100 space-y-0.5">
         {lines.map((line, index) => (
           <div
             key={index}
@@ -422,35 +464,46 @@ CREATE TABLE orders (
   };
 
   return (
-    <section className="bg-gradient-to-br from-gray-950 to-gray-900 rounded-xl p-6 shadow-lg transition-all duration-500 border border-gray-800 hover:shadow-xl backdrop-blur-lg bg-opacity-90 relative overflow-hidden group">
-      {/* Glassmorphism decoration elements */}
-      <div className="absolute -top-20 -right-20 w-40 h-40 bg-indigo-600 rounded-full opacity-10 blur-3xl"></div>
-      <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-emerald-600 rounded-full opacity-10 blur-3xl"></div>
-
+    <div className="bg-black rounded-xl border w-2xl border-gray-800 shadow-lg overflow-hidden relative">
+      {/* Decorative gradient effects */}
+      <div className="absolute -bottom-16 -right-16 w-48 h-48 bg-purple-600 rounded-full opacity-10 blur-3xl"></div>
+      <div className="absolute -top-16 -left-16 w-48 h-48 bg-blue-600 rounded-full opacity-10 blur-3xl"></div>
+      
       <div className="relative z-10">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-Montserrat font-semibold text-gray-300 mb-4 flex items-center">
-          <ChevronsLeftRightEllipsis className="mr-2 size-8 text-green-600" />
-          Schema Viewer
-        </h2>
+        {/* Header */}
+        <div className="border-b border-gray-800 px-6 py-4 flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+            <div className="bg-purple-950 p-2 rounded-lg">
+              <Database className="h-5 w-5 text-purple-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-white flex items-center">
+                <span className="inline-block w-1 h-5 bg-purple-500 rounded-r mr-2"></span>
+                Schema Explorer
+              </h2>
+              <div className="flex items-center mt-1">
+                <span className="text-xs text-gray-400">PostgreSQL → AWS Aurora</span>
+              </div>
+            </div>
+          </div>
 
           <div className="flex space-x-2">
             <button
               onClick={() => setActiveTab("sql")}
-              className={`px-3 py-1 rounded-md text-sm font-Outfit transition-all ${
+              className={`px-4 py-2 rounded-md text-sm transition-all ${
                 activeTab === "sql"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-950 text-gray-400 hover:bg-gray-800"
+                  ? "bg-purple-700 text-white"
+                  : "bg-gray-900 text-gray-400 hover:bg-gray-800"
               }`}
             >
               SQL
             </button>
             <button
               onClick={() => setActiveTab("visual")}
-              className={`px-3 py-1 rounded-md text-sm font-Outfit transition-all ${
+              className={`px-4 py-2 rounded-md text-sm transition-all ${
                 activeTab === "visual"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-950 text-gray-400 hover:bg-gray-800"
+                  ? "bg-purple-700 text-white"
+                  : "bg-gray-900 text-gray-400 hover:bg-gray-800"
               }`}
             >
               Visual
@@ -460,46 +513,46 @@ CREATE TABLE orders (
 
         <div className="relative">
           {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-950 bg-opacity-80 z-20 rounded-lg backdrop-blur-sm">
+            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80 z-20 backdrop-blur-sm">
               <div className="flex flex-col items-center">
-                <div className="w-12 h-12 border-4 border-t-indigo-500 border-gray-800 rounded-full animate-spin"></div>
-                <p className="mt-4 font-Syne text-indigo-400">
+                <div className="w-12 h-12 border-4 border-t-purple-500 border-gray-800 rounded-full animate-spin"></div>
+                <p className="mt-4 text-purple-400">
                   Loading schema...
                 </p>
               </div>
             </div>
           )}
 
-          <div className="bg-gray-950 bg-opacity-90 rounded-lg border border-gray-800 backdrop-blur-md transition-all duration-300 group-hover:border-indigo-600/30">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
-              <div className="flex items-center space-x-2">
-                <Code2 className="h-4 w-4 text-indigo-400" />
-                <span className="text-sm font-Montserrat text-gray-300">
+          <div className="bg-gray-950 bg-opacity-70 backdrop-blur-md">
+            <div className="flex items-center justify-between px-6 py-3 border-b border-gray-800 bg-black bg-opacity-50">
+              <div className="flex items-center space-x-3">
+                <Code2 className="h-4 w-4 text-purple-400" />
+                <span className="text-sm text-gray-300">
                   database_schema.sql
                 </span>
               </div>
               <button
                 onClick={copyToClipboard}
-                className="p-1.5 rounded-md bg-gray-900 hover:bg-gray-800 transition-all text-gray-400 hover:text-white"
+                className="p-2 rounded-md bg-gray-900 hover:bg-gray-800 transition-all text-gray-400 hover:text-white"
               >
                 {copied ? (
-                  <Check className="h-4 w-4 text-emerald-400" />
+                  <Check className="h-4 w-4 text-green-400" />
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
               </button>
             </div>
 
-            <div className="p-6 h-72 overflow-y-auto custom-scrollbar">
+            <div className="px-6 py-4 h-72 overflow-y-auto custom-scrollbar">
               {activeTab === "sql" ? (
                 <SchemaContent />
               ) : (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
-                    <div className="inline-block p-4 bg-gray-900 rounded-full mb-4">
-                      <FileCode className="h-10 w-10 text-indigo-400" />
+                    <div className="inline-block p-6 bg-gray-900 rounded-full mb-4 border border-gray-800">
+                      <Table className="h-10 w-10 text-purple-400" />
                     </div>
-                    <p className="font-Syne text-gray-300">
+                    <p className="text-gray-300">
                       Visual schema coming soon
                     </p>
                   </div>
@@ -508,50 +561,61 @@ CREATE TABLE orders (
             </div>
           </div>
 
-          <div className="mt-4 flex justify-between items-center">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
-              <span className="text-xs font-Outfit text-gray-400">
-                3 tables
-              </span>
+          <div className="px-6 py-3 bg-black bg-opacity-70 border-t border-gray-800 flex justify-between items-center">
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center">
+                <div className="w-2 h-2 rounded-full bg-purple-400 mr-2"></div>
+                <span className="text-xs text-gray-400">
+                  3 tables
+                </span>
+              </div>
+              <span className="text-gray-700">|</span>
+              <div className="flex items-center">
+                <div className="w-2 h-2 rounded-full bg-green-400 mr-2"></div>
+                <span className="text-xs text-gray-400">
+                  8 indexes
+                </span>
+              </div>
             </div>
-            <span className="text-xs font-Outfit text-gray-400">
-              Last updated: Today
+            <span className="text-xs text-gray-400">
+              Last updated: April 22, 2025
             </span>
           </div>
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(4px);
+      <style>
+        {`
+          @keyframes fade-in {
+            from {
+              opacity: 0;
+              transform: translateY(4px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
+          .animate-fade-in {
+            animation: fade-in 0.5s ease-out;
           }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.5s ease-out;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(17, 24, 39, 0.5);
-          border-radius: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(79, 70, 229, 0.4);
-          border-radius: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(79, 70, 229, 0.6);
-        }
-      `}</style>
-    </section>
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(17, 24, 39, 0.2);
+            border-radius: 6px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(139, 92, 246, 0.3);
+            border-radius: 6px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(139, 92, 246, 0.5);
+          }
+        `}
+      </style>
+    </div>
   );
 };
 
@@ -727,7 +791,7 @@ export const MigrationHistoryTable = () => {
                 <tbody className="divide-y divide-gray-800/50">
                   {migrations.map((migration, index) => (
                     <tr
-                      key={migration.id}
+                    key={`${migration.id}-${index}`}
                       className="hover:bg-gray-900/50 transition-all duration-200 animate-fade-in"
                       style={{ animationDelay: `${index * 150}ms` }}
                     >
@@ -785,43 +849,45 @@ export const MigrationHistoryTable = () => {
         </div>
       </div>
       
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
+      <style>
+        {`
+          @keyframes fade-in {
+            from {
+              opacity: 0;
+              transform: translateY(8px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
           }
-          to {
-            opacity: 1;
-            transform: translateY(0);
+          .animate-fade-in {
+            animation: fade-in 0.3s ease-out forwards;
           }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out forwards;
-        }
-        @keyframes spin-slow {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        .animate-spin-slow:hover {
-          animation: spin-slow 1.5s linear infinite;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          height: 8px;
-          width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(17, 24, 39, 0.5);
-          border-radius: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(79, 70, 229, 0.4);
-          border-radius: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(79, 70, 229, 0.6);
-        }
-      `}</style>
+          @keyframes spin-slow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+          .animate-spin-slow:hover {
+            animation: spin-slow 1.5s linear infinite;
+          }
+          .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(17, 24, 39, 0.5);
+            border-radius: 8px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(79, 70, 229, 0.4);
+            border-radius: 8px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(79, 70, 229, 0.6);
+          }
+        `}
+      </style>
     </section>
   );
 }

@@ -47,7 +47,7 @@ const Navbar = ({ mobileMenuOpen, setMobileMenuOpen, login }) => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex navlinks text-[#D1D1D2] space-x-12 font-Outfit">
           {Navlinks.map((item, idx) => {
-            const href = item.toLowerCase().replace(/\s+/g, "-"); // Make id-friendly text like 'why-refyn'
+            const href = item.toLowerCase().replace(/\s+/g, "-");
             return (
               <Motion_Span
                 key={item}

@@ -1,0 +1,62 @@
+[
+    {
+      "id": 1,
+      "timestamp": "14:32:54",
+      "message": "Migration #156 completed successfully",
+      "type": "success"
+    },
+    {
+      "id": 2,
+      "timestamp": "14:29:12",
+      "message": "Applying changes to users table",
+      "type": "info"
+    },
+    {
+      "id": 3,
+      "timestamp": "14:28:47",
+      "message": "Creating new index on products.category_id",
+      "type": "info"
+    },
+    {
+      "id": 4,
+      "timestamp": "14:25:33",
+      "message": "Failed to update foreign key constraint",
+      "type": "error"
+    },
+    {
+      "id": 5,
+      "timestamp": "14:22:19",
+      "message": "Migration #155 initiated by admin@example.com",
+      "type": "info"
+    },
+    {
+      "id": 6,
+      "timestamp": "13:55:02",
+      "message": "Schema backup created successfully",
+      "type": "success"
+    },
+    {
+      "id": 7,
+      "timestamp": "13:42:11",
+      "message": "Migration #154 completed with warnings",
+      "type": "warning"
+    },
+    {
+      "id": 8,
+      "timestamp": "13:30:45",
+      "message": "Database connection pool optimized",
+      "type": "success"
+    },
+    {
+      "id": 9,
+      "timestamp": "13:15:22",
+      "message": "Running safety checks before migration",
+      "type": "info"
+    },
+    {
+      "id": 10,
+      "timestamp": "12:58:39",
+      "message": "Preparing rollback snapshot",
+      "type": "info"
+    }
+  ]

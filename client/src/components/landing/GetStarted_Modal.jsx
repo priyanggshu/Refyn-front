@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Brain, Database, Check } from "lucide-react";
+import { X, Brain, Check } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { Github } from "lucide-react";
 
@@ -19,7 +19,7 @@ const GetStartedModal = ({ isOpen, onClose, isLoading, authError, login }) => {
     return () => window.removeEventListener("keydown", handleEscKey);
   }, [isOpen, onClose]);
 
-  // Prevent body scroll when modal is open
+  // Prevent scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";

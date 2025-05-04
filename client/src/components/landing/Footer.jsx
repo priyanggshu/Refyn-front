@@ -48,7 +48,7 @@ const Footer = () => {
 
   return (
     <footer className="m-2 py-2">
-      {/* Main container with subtle gradient background */}
+      {/* Main container */}
       <div className="bg-gradient-to-br from-transparent to-black/5 backdrop-blur-sm mx-4 md:mx-8 lg:mx-4 lg:max-w-8xl ">
         <div className="px-1 md:px-8">
           <motion.div
@@ -58,7 +58,7 @@ const Footer = () => {
             viewport={{ once: true }}
             className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center"
           >
-            {/* Left side - Logo and copyright */}
+            {/* Left - Logo and copyright */}
             <motion.div
               variants={itemVariants}
               className="flex flex-col space-y-4"
@@ -87,7 +87,7 @@ const Footer = () => {
               </p>
             </motion.div>
 
-            {/* Right side - Repository and licensing */}
+            {/* Right - Repository and licensing */}
             <motion.div
               variants={itemVariants}
               className="flex flex-col space-y-4 md:items-end"
@@ -154,7 +154,7 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Subtle gradient reflection below the footer */}
+      {/* Subtle reflection below the footer */}
       <div className="md:hidden h-2 bg-gradient-to-b from-[#716aeb]/5 to-transparent mx-6 md:mx-12 lg:mx-auto lg:max-w-6xl"></div>
     </footer>
   );
