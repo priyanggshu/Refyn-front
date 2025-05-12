@@ -35,7 +35,13 @@ export const AuthProvider = ({ children }) => {
     };
   
     getInitialUser();
-  
+
+    if (window.location.hash) {
+      const url = new URL(window.location.href);
+      url.hash = '';
+      window.history.replaceState(null, '', url.toString());
+    }
+
     const { data: listener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setUser(session?.user || null);
@@ -49,14 +55,20 @@ export const AuthProvider = ({ children }) => {
   
 
   const loginWithGitHub = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({ provider: 'github' });
+    const { error } = await supabase.auth.signInWithOAuth({ 
+      provider: 'github',  
+      redirectTo: import.meta.env.VITE_SUPABASE_REDIRECT_URL,
+    });
     if (error) console.error("GitHub login error:", error);
   };
-
+  
   const loginWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+    const { error } = await supabase.auth.signInWithOAuth({ 
+      provider: 'google',
+      redirectTo: import.meta.env.VITE_SUPABASE_REDIRECT_URL,
+    });
     if (error) console.error("Google login error:", error);
-  };
+  };  
 
   const logout = async () => {
     const { error } = await supabase.auth.signOut();

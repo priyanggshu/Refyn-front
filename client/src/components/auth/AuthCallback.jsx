@@ -12,7 +12,7 @@ export default function AuthCallback() {
 
       if (error) {
         console.error("OAuth Callback Error:", error);
-        navigate("/", { state: { error: `OAuth authentication failed: ${error}` } });
+        navigate("/dash", { state: { error: `OAuth authentication failed: ${error}` } });
       } else {
         navigate("/dash");
       }
