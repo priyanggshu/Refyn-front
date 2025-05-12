@@ -5,8 +5,6 @@ import {
   rollbackMigration,
   getSchemasForMigration,
   approveSchemaFix,
-  getSchemaFile,
-  updateSchemaFile
 } from "../controllers/migrationController.js";
 import { authenticateToken } from "../middlewares/authMiddleware.js";
 
